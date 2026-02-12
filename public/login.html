@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(120deg,#667eea,#764ba2);
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-family: Arial, sans-serif;
+    }
+    .card {
+      background:#fff;
+      padding:30px;
+      border-radius:15px;
+      width:320px;
+      box-shadow:0 10px 30px rgba(0,0,0,.3);
+      text-align:center;
+    }
+    input, button {
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+      border-radius:8px;
+      border:1px solid #ccc;
+      font-size:14px;
+    }
+    button {
+      background:#6366f1;
+      color:white;
+      border:none;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .error { color:#dc2626; font-size:13px; min-height:16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🔐 Login</h2>
+    <input id="email" placeholder="Email" type="email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div class="error" id="error"></div>
+    <p style="font-size:12px;margin-top:10px">
+      No account? <a href="register.html">Register</a>
+    </p>
+  </div>
+
+<script>
+async function login() {
+  error.innerText = "";
+
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.value.trim(),
+        password: password.value
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+
+    localStorage.token = data.token;
+
+    if (data.role === "Admin") location.href = "dashboard-admin.html";
+else if (data.role === "Voter") location.href = "dashboard-voter.html";
+else location.href = "dashboard-observer.html";
+
+
+  } catch (e) {
+    error.innerText = e.message;
+  }
+}
+</script>
+</body>
+</html>

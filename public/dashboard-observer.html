@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Observer Dashboard</title>
+<style>
+body{
+  font-family:Arial;
+  background:#f1f5f9;
+  padding:40px;
+}
+.cards{
+  display:flex;
+  gap:20px;
+}
+.card{
+  background:white;
+  padding:20px;
+  flex:1;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+</style>
+</head>
+
+<body>
+
+<h1>Observer Dashboard</h1>
+
+<div class="cards">
+  <div class="card">
+    <h3>Total Votes</h3>
+    <h2>900</h2>
+  </div>
+
+  <div class="card">
+    <h3>Turnout</h3>
+    <h2>72%</h2>
+  </div>
+
+  <div class="card">
+    <h3>Leading Candidate</h3>
+    <h2>Candidate A</h2>
+  </div>
+</div>
+
+<br>
+<button onclick="logout()">Logout</button>
+
+<script>
+function logout(){
+  location.href="login.html";
+}
+</script>
+
+</body>
+</html>

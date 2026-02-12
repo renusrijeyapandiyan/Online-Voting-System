@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f6fb;
+}
+.sidebar{
+  width:220px;
+  height:100vh;
+  background:#4f46e5;
+  color:white;
+  position:fixed;
+  padding:20px;
+}
+.sidebar a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin:15px 0;
+  cursor:pointer;
+}
+.main{
+  margin-left:240px;
+  padding:30px;
+}
+.section{
+  display:none;
+}
+.active{
+  display:block;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+button{
+  background:#4f46e5;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+}
+table{
+  width:100%;
+  background:white;
+  border-radius:10px;
+}
+td,th{ padding:10px; }
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>Admin Panel</h2>
+  <a onclick="showSection('dashboard')">Dashboard</a>
+  <a onclick="showSection('voters')">Manage Voters</a>
+  <a onclick="showSection('candidates')">Candidates</a>
+  <a onclick="showSection('results')">Results</a>
+  <a onclick="logout()">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="section active">
+    <h1>Dashboard</h1>
+
+    <div class="card">
+      <h3>Total Voters</h3>
+      <h2>120</h2>
+    </div>
+
+    <div class="card">
+      <h3>Total Candidates</h3>
+      <h2>8</h2>
+    </div>
+  </div>
+
+  <!-- Manage Voters -->
+  <div id="voters" class="section">
+    <h1>Manage Voters</h1>
+
+    <button>Add Voter</button>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+      <tr>
+        <td>User1</td>
+        <td>user@email.com</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Candidates -->
+  <div id="candidates" class="section">
+    <h1>Candidates</h1>
+
+    <button>Add Candidate</button>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Party</th>
+      </tr>
+      <tr>
+        <td>Candidate A</td>
+        <td>Party X</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Results -->
+  <div id="results" class="section">
+    <h1>Results</h1>
+
+    <div class="card">
+      Candidate A — 60 Votes
+    </div>
+
+    <div class="card">
+      Candidate B — 40 Votes
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+function showSection(sectionId){
+  document.querySelectorAll(".section").forEach(sec=>{
+    sec.classList.remove("active");
+  });
+  document.getElementById(sectionId).classList.add("active");
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>
