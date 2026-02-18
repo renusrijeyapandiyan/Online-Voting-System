@@ -1,159 +1,358 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>Admin Dashboard</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:#f4f6fb;
+  font-family:Segoe UI, Arial;
+  background:#eef2f7;
 }
-.sidebar{
-  width:220px;
-  height:100vh;
-  background:#4f46e5;
+
+/* HEADER */
+header{
+  background:#1e3a5f;
   color:white;
-  position:fixed;
-  padding:20px;
+  padding:18px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  letter-spacing:1px;
 }
-.sidebar a{
-  display:block;
-  color:white;
-  text-decoration:none;
-  margin:15px 0;
-  cursor:pointer;
+
+/* LAYOUT */
+.container{
+  padding:25px;
+  max-width:1200px;
+  margin:auto;
 }
-.main{
-  margin-left:240px;
-  padding:30px;
-}
-.section{
-  display:none;
-}
-.active{
-  display:block;
-}
+
+/* CARD */
 .card{
   background:white;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
+  padding:25px;
+  margin-bottom:25px;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
-button{
-  background:#4f46e5;
-  color:white;
-  border:none;
-  padding:10px 20px;
+
+.card h3{
+  margin-top:0;
+  color:#1e3a5f;
+}
+
+/* INPUTS */
+input, select{
+  padding:12px;
+  margin:6px 0;
   border-radius:8px;
-  cursor:pointer;
+  border:1px solid #ddd;
+  width:100%;
+  font-size:14px;
 }
+
+/* BUTTONS */
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+button:hover{
+  background:#1e40af;
+}
+
+.deleteBtn{
+  background:#dc2626;
+}
+.deleteBtn:hover{
+  background:#991b1b;
+}
+
+/* TABLE */
 table{
   width:100%;
-  background:white;
-  border-radius:10px;
+  border-collapse:collapse;
+  margin-top:15px;
 }
-td,th{ padding:10px; }
-</style>
 
+th{
+  background:#1e3a5f;
+  color:white;
+  padding:12px;
+  text-align:left;
+}
+
+td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+/* FLEX */
+.flex{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.flex input{
+  flex:1;
+}
+</style>
 </head>
 
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-  <h2>Admin Panel</h2>
-  <a onclick="showSection('dashboard')">Dashboard</a>
-  <a onclick="showSection('voters')">Manage Voters</a>
-  <a onclick="showSection('candidates')">Candidates</a>
-  <a onclick="showSection('results')">Results</a>
-  <a onclick="logout()">Logout</a>
+<header>Admin Dashboard</header>
+
+<div class="container">
+
+<!-- CREATE ELECTION -->
+<div class="card">
+<h3>Create Election</h3>
+
+<input id="title" placeholder="Election Title">
+
+<label>Start Time</label>
+<input id="start" type="datetime-local">
+
+<label>End Time</label>
+<input id="end" type="datetime-local">
+
+<h4>Add Candidates</h4>
+
+<div class="flex">
+<input id="candidateName" placeholder="Candidate Name">
+<button onclick="addCandidate()">Add</button>
 </div>
 
-<!-- Main -->
-<div class="main">
+<ul id="candidateList"></ul>
 
-  <!-- Dashboard -->
-  <div id="dashboard" class="section active">
-    <h1>Dashboard</h1>
+<button onclick="createElection()">Create Election</button>
+</div>
 
-    <div class="card">
-      <h3>Total Voters</h3>
-      <h2>120</h2>
-    </div>
+<!-- AVAILABLE ELECTIONS -->
+<div class="card">
+<h3>Available Elections</h3>
+<table id="electionsTable"></table>
+</div>
 
-    <div class="card">
-      <h3>Total Candidates</h3>
-      <h2>8</h2>
-    </div>
-  </div>
-
-  <!-- Manage Voters -->
-  <div id="voters" class="section">
-    <h1>Manage Voters</h1>
-
-    <button>Add Voter</button>
-
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-      </tr>
-      <tr>
-        <td>User1</td>
-        <td>user@email.com</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- Candidates -->
-  <div id="candidates" class="section">
-    <h1>Candidates</h1>
-
-    <button>Add Candidate</button>
-
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Party</th>
-      </tr>
-      <tr>
-        <td>Candidate A</td>
-        <td>Party X</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- Results -->
-  <div id="results" class="section">
-    <h1>Results</h1>
-
-    <div class="card">
-      Candidate A — 60 Votes
-    </div>
-
-    <div class="card">
-      Candidate B — 40 Votes
-    </div>
-  </div>
+<!-- USER MANAGEMENT -->
+<div class="card">
+<h3>User Management</h3>
+<table id="usersTable"></table>
+</div>
 
 </div>
 
 <script>
+const token = localStorage.token || ""; // Make sure token exists
+let candidates = [];
 
-function showSection(sectionId){
-  document.querySelectorAll(".section").forEach(sec=>{
-    sec.classList.remove("active");
+/* FORMAT TIME AM PM */
+function formatAMPM(dateString){
+  const d = new Date(dateString);
+  return d.toLocaleString("en-US",{
+    dateStyle:"medium",
+    timeStyle:"short"
   });
-  document.getElementById(sectionId).classList.add("active");
 }
 
-function logout(){
-  localStorage.removeItem("token");
-  location.href="login.html";
+/* ADD CANDIDATE */
+function addCandidate(){
+  const name = candidateName.value.trim();
+  if(!name) return;
+  candidates.push(name);
+  candidateName.value="";
+  renderCandidates();
 }
 
+function renderCandidates(){
+  candidateList.innerHTML = candidates.map(c=>`<li>${c}</li>`).join("");
+}
+
+/* CREATE ELECTION WITH ERROR LOGGING */
+async function createElection(){
+  const titleVal = title.value.trim();
+  const startVal = start.value;
+  const endVal = end.value;
+
+  // Validate inputs
+  if(!titleVal || !startVal || !endVal || candidates.length===0){
+    alert("Please fill all fields and add at least one candidate");
+    return;
+  }
+
+  // Validate start < end
+  if(new Date(startVal) >= new Date(endVal)){
+    alert("Start time must be before End time");
+    return;
+  }
+
+  try{
+    const response = await fetch("/api/election",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer "+token
+      },
+      body:JSON.stringify({
+        title: titleVal,
+        startAt: new Date(startVal).toISOString(),
+        endsAt: new Date(endVal).toISOString(),
+        candidates: candidates.map(name=>({ name })) // Convert to objects
+      })
+    });
+
+    if(response.ok){
+      alert("Election Created Successfully");
+      // Reset form
+      title.value="";
+      start.value="";
+      end.value="";
+      candidates = [];
+      renderCandidates();
+      loadElections(); // Refresh immediately
+    } else {
+      // Try to read backend error message
+      let text;
+      try {
+        text = await response.text();
+      } catch(e){
+        text = "Unknown backend error";
+      }
+      console.error("Backend error:", text);
+      alert("Error creating election: " + text);
+    }
+
+  }catch(err){
+    console.error("Network or server error:", err);
+    alert("Network or server error while creating election");
+  }
+}
+
+/* LOAD ELECTIONS */
+async function loadElections(){
+  try{
+    const res = await fetch("/api/elections",{
+      headers:{ Authorization:"Bearer "+token }
+    });
+    const data = await res.json();
+
+    let html=`
+    <tr>
+      <th>Title</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Action</th>
+    </tr>
+    `;
+
+    data.forEach(e=>{
+      const id = e.id || e._id; // Support both id formats
+      html+=`
+      <tr>
+        <td>${e.title}</td>
+        <td>${formatAMPM(e.startAt)}</td>
+        <td>${formatAMPM(e.endsAt)}</td>
+        <td>
+          <button class="deleteBtn" onclick="deleteElection('${id}')">Delete</button>
+        </td>
+      </tr>
+      `;
+    });
+
+    electionsTable.innerHTML = html;
+
+  }catch(err){
+    console.error("Error loading elections:", err);
+    electionsTable.innerHTML="<tr><td colspan='4'>Error loading elections</td></tr>";
+  }
+}
+
+/* DELETE ELECTION */
+async function deleteElection(id){
+  if(!confirm("Are you sure you want to delete this election?")) return;
+  try{
+    await fetch("/api/election/"+id,{
+      method:"DELETE",
+      headers:{ Authorization:"Bearer "+token }
+    });
+    loadElections();
+  }catch(err){
+    console.error(err);
+    alert("Error deleting election");
+  }
+}
+
+/* LOAD USERS */
+async function loadUsers(){
+  try{
+    const res = await fetch("/api/users",{
+      headers:{ Authorization:"Bearer "+token }
+    });
+    const users = await res.json();
+
+    let html=`
+    <tr>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Action</th>
+    </tr>
+    `;
+
+    users.forEach(u=>{
+      const id = u.id || u._id;
+      html+=`
+      <tr>
+        <td>${u.email}</td>
+        <td>${u.role}</td>
+        <td>
+          <button class="deleteBtn" onclick="deleteUser('${id}')">Delete</button>
+        </td>
+      </tr>
+      `;
+    });
+
+    usersTable.innerHTML = html;
+
+  }catch(err){
+    console.error("Error loading users:", err);
+    usersTable.innerHTML="<tr><td colspan='3'>Error loading users</td></tr>";
+  }
+}
+
+/* DELETE USER */
+async function deleteUser(id){
+  if(!confirm("Are you sure you want to delete this user?")) return;
+  try{
+    await fetch("/api/users/"+id,{
+      method:"DELETE",
+      headers:{ Authorization:"Bearer "+token }
+    });
+    loadUsers();
+  }catch(err){
+    console.error(err);
+    alert("Error deleting user");
+  }
+}
+
+/* AUTO REFRESH REAL TIME */
+setInterval(()=>{
+  loadUsers();
+  loadElections();
+},5000);
+
+/* INITIAL LOAD */
+loadUsers();
+loadElections();
 </script>
 
 </body>

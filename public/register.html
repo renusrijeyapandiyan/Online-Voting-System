@@ -1,97 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background: linear-gradient(120deg,#667eea,#764ba2);
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      font-family: Arial, sans-serif;
-    }
-    .card {
-      background:#fff;
-      padding:30px;
-      border-radius:15px;
-      width:320px;
-      box-shadow:0 10px 30px rgba(0,0,0,.3);
-      text-align:center;
-    }
-    input, select, button {
-      width:100%;
-      padding:12px;
-      margin:10px 0;
-      border-radius:8px;
-      border:1px solid #ccc;
-      font-size:14px;
-    }
-    button {
-      background:#22c55e;
-      color:white;
-      border:none;
-      font-weight:bold;
-      cursor:pointer;
-    }
-    .error { color:#dc2626; font-size:13px; min-height:16px; }
-  </style>
+<title>Register</title>
+
+<style>
+body {
+background: linear-gradient(120deg,#2980b9,#6dd5fa,#ffffff);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family: Arial, sans-serif;
+}
+
+.card {
+background:#fff;
+padding:30px;
+border-radius:15px;
+width:320px;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
+text-align:center;
+}
+
+input, select, button {
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+button {
+background:#2980b9;
+color:white;
+border:none;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#1c5f8a;
+}
+
+.error { 
+color:#dc2626; 
+font-size:13px; 
+min-height:16px; 
+}
+
+.success{
+color:#16a34a;
+font-size:13px;
+min-height:16px;
+}
+
+.link{
+font-size:12px;
+margin-top:10px;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h2>📝 Register</h2>
 
-    <input id="email" placeholder="Email" type="email" />
-    <input id="password" type="password" placeholder="Password" />
+<div class="card">
+<h2>📝 Register</h2>
 
-    <select id="role">
-      <option value="Voter">Voter</option>
-      <option value="Observer">Observer</option>
-      <option value="Admin">Admin</option>
-    </select>
+<input id="email" placeholder="Email" type="email">
+<input id="password" type="password" placeholder="Password">
 
-    <button onclick="register()">Create Account</button>
-    <div class="error" id="error"></div>
+<select id="role">
+<option value="Voter">Voter</option>
+<option value="Observer">Observer</option>
+<option value="Admin">Admin</option>
+</select>
 
-    <p style="font-size:12px;margin-top:10px">
-      Already have an account? <a href="login.html">Login</a>
-    </p>
-  </div>
+<button onclick="register()">Create Account</button>
+
+<div class="error" id="error"></div>
+<div class="success" id="success"></div>
+
+<div class="link">
+Already have account? <a href="login.html">Login</a>
+</div>
+
+</div>
 
 <script>
-async function register() {
-  error.innerText = "";
+async function register(){
 
-  if (!email.value || !password.value) {
-    error.innerText = "Please fill all fields";
-    return;
-  }
+error.innerText="";
+success.innerText="";
 
-  try {
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email.value.trim(),
-        password: password.value,
-        role: role.value
-      })
-    });
+if(!email.value || !password.value){
+error.innerText="Fill all fields";
+return;
+}
 
-    const data = await res.json();
+const res = await fetch("/api/register",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+email: email.value,
+password: password.value,
+role: role.value
+})
+});
 
-    if (!res.ok) {
-      throw new Error(data.error || "Registration failed");
-    }
+const data = await res.json();
 
-    alert("Account created! You can login now.");
-    location.href = "login.html";
-
-  } catch (e) {
-    error.innerText = e.message;
-  }
+if(data.error){
+error.innerText = data.error;
+}else{
+success.innerText="Account created! Redirecting...";
+setTimeout(()=>{
+location.href="login.html";
+},1500);
+}
 }
 </script>
+
 </body>
 </html>

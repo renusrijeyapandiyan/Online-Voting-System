@@ -1,44 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <title>Online Voting System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin:0;
-      height:100vh;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(120deg,#667eea,#764ba2);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      color:white;
-      text-align:center;
-    }
-    .box {
-      background: rgba(0,0,0,0.25);
-      padding:40px;
-      border-radius:16px;
-      width:90%;
-      max-width:400px;
-    }
-    button {
-      padding:12px 20px;
-      border:none;
-      border-radius:8px;
-      background:white;
-      font-weight:bold;
-      cursor:pointer;
-      margin:10px;
-    }
-  </style>
+<title>Online Voting System</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* NAVBAR */
+nav{
+background:#2c3e50;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+nav h2{
+margin:0;
+}
+
+nav div button{
+margin-left:10px;
+padding:8px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.loginBtn{
+background:#3498db;
+color:white;
+}
+
+.registerBtn{
+background:#2ecc71;
+color:white;
+}
+
+/* HERO */
+.hero{
+height:90vh;
+background:linear-gradient(120deg,#2980b9,#6dd5fa,#ffffff);
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:20px;
+}
+
+.hero h1{
+font-size:40px;
+color:#2c3e50;
+}
+
+.hero p{
+font-size:18px;
+color:#444;
+}
+
+.hero button{
+margin-top:20px;
+padding:12px 25px;
+font-size:16px;
+border:none;
+border-radius:8px;
+background:#2980b9;
+color:white;
+cursor:pointer;
+}
+
+/* FEATURES */
+.features{
+padding:50px 20px;
+background:#f4f6f9;
+text-align:center;
+}
+
+.feature-box{
+background:white;
+padding:25px;
+margin:15px;
+display:inline-block;
+width:250px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+footer{
+background:#2c3e50;
+color:white;
+text-align:center;
+padding:15px;
+}
+</style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>🗳️ Online Voting System</h1>
-    <p>Secure • Anonymous • Fair</p>
-    <button onclick="location.href='login.html'">Login</button>
-    <button onclick="location.href='register.html'">Register</button>
-  </div>
+
+<!-- NAVBAR -->
+<nav>
+<h2>Online Voting</h2>
+
+<div>
+<button class="loginBtn" onclick="goLogin()">Login</button>
+<button class="registerBtn" onclick="goRegister()">Register</button>
+</div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero">
+<div>
+<h1>Welcome to Online Voting System</h1>
+<p>Secure • Fast • Transparent Voting Platform</p>
+<button onclick="goLogin()">Start Voting</button>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+
+<h2>Why Choose Our Voting System?</h2>
+
+<div class="feature-box">
+<h3>🔐 Secure</h3>
+<p>JWT authentication and encrypted passwords.</p>
+</div>
+
+<div class="feature-box">
+<h3>⚡ Fast</h3>
+<p>Real-time election results and quick voting process.</p>
+</div>
+
+<div class="feature-box">
+<h3>🌐 Online</h3>
+<p>Vote from anywhere at any time.</p>
+</div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+© 2026 Online Voting System
+</footer>
+
+<script>
+function goLogin(){
+window.location="login.html";
+}
+
+function goRegister(){
+window.location="register.html";
+}
+</script>
+
 </body>
 </html>

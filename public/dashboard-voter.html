@@ -2,60 +2,141 @@
 <html>
 <head>
 <title>Voter Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{
-  font-family:Arial;
-  background:#eef2ff;
+  font-family: Arial;
+  background: linear-gradient(135deg,#4f46e5,#06b6d4);
   padding:40px;
 }
-.container{
-  max-width:900px;
-  margin:auto;
-}
+.container{ max-width:900px; margin:auto; }
+h1{ color:white; text-align:center; }
 .card{
   background:white;
   padding:20px;
-  border-radius:12px;
+  border-radius:15px;
   margin-bottom:20px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
 button{
   background:#4f46e5;
   color:white;
   border:none;
   padding:10px 20px;
-  border-radius:8px;
+  border-radius:10px;
   cursor:pointer;
 }
+.logout{ background:#ef4444; }
 </style>
 </head>
-
 <body>
 
 <div class="container">
-  <h1>Vote Now</h1>
-
-  <div class="card">
-    <h3>Candidate A</h3>
-    <button onclick="vote()">Vote</button>
-  </div>
-
-  <div class="card">
-    <h3>Candidate B</h3>
-    <button onclick="vote()">Vote</button>
-  </div>
-
-  <br>
-  <button onclick="logout()">Logout</button>
+  <h1>🗳 Voter Panel</h1>
+  <div id="content"></div>
+  <button class="logout" onclick="logout()">Logout</button>
 </div>
 
 <script>
-function vote(){
-  alert("Vote Submitted Successfully ✅");
+const token = localStorage.getItem("token");
+let currentElection = null;
+
+async function loadElection(){
+  let res = await fetch("/api/elections",{
+    headers:{ Authorization:"Bearer "+token }
+  });
+  let elections = await res.json();
+
+  if(!elections.length){
+    content.innerHTML = `
+      <div class="card">
+        <h2>❌ No Election Available</h2>
+        <p>Please wait for admin to conduct election</p>
+      </div>
+    `;
+    return;
+  }
+
+  currentElection = elections[0];
+
+  let cRes = await fetch(`/api/candidates/${currentElection.id}`,{
+    headers:{ Authorization:"Bearer "+token }
+  });
+  currentElection.candidates = await cRes.json();
+
+  showVoting(currentElection);
 }
+
+function showVoting(election){
+  let html = `
+    <div class="card">
+      <h2>${election.title}</h2>
+      <p>Ends At: ${new Date(election.endsAt).toLocaleString()}</p>
+    </div>
+  `;
+
+  election.candidates.forEach(c=>{
+    html += `
+      <div class="card">
+        <h3>${c.name}</h3>
+        <button onclick="vote(${election.id},${c.id})">Vote</button>
+      </div>
+    `;
+  });
+
+  html += `<button onclick="loadResults()">View Results</button>`;
+  content.innerHTML = html;
+}
+
+async function vote(electionId,candidateId){
+  let res = await fetch("/api/vote",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:"Bearer "+token
+    },
+    body:JSON.stringify({ electionId, candidateId })
+  });
+
+  alert(res.ok ? "✅ Vote Submitted" : "⚠ Already voted or error");
+}
+
+async function loadResults(){
+  let res = await fetch(`/api/results/${currentElection.id}`,{
+    headers:{ Authorization:"Bearer "+token }
+  });
+  let results = await res.json();
+  showResults(results);
+}
+
+function showResults(results){
+  let labels = results.map(r=>r.name);
+  let votes = results.map(r=>r.votes);
+  let total = votes.reduce((a,b)=>a+b,0) || 1;
+
+  let html = `<div class="card"><canvas id="chart"></canvas></div>`;
+  labels.forEach((l,i)=>{
+    let p = ((votes[i]/total)*100).toFixed(2);
+    html += `<div class="card">${l} — ${p}%</div>`;
+  });
+
+  content.innerHTML = html;
+
+  new Chart(document.getElementById("chart"),{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[{ label:"Votes", data:votes }]
+    }
+  });
+}
+
 function logout(){
+  localStorage.removeItem("token");
   location.href="login.html";
 }
+
+loadElection();
 </script>
 
 </body>
