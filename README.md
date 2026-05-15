@@ -52,7 +52,7 @@ This project demonstrates:
 - Express.js
 
 ### Database
-- SQLite / MySQL (Based on your setup)
+- SQLite / MySQL 
 
 ---
 
